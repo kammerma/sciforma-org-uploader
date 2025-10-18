@@ -1,0 +1,20 @@
+
+# Environments
+.venv/
+env/
+venv/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pytest_cache/
+
+# dotenv
+.env
+
+# data
+data/
+app/sample_data/
+*.csv
