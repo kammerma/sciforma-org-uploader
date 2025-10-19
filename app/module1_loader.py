@@ -1,43 +1,51 @@
 
 from __future__ import annotations
 from typing import Tuple
+import random
 from .models import OrgGraph, LEVELS, TOP_PARENT_ID
 from .sciforma_client import SciformaClient
 
+_generated_ids = set()
+
+def _generate_unique_id(existing_ids: set[int]) -> int:
+    """Generate a unique 6-digit integer ID (100000-999999)."""
+    while True:
+        val = random.randint(100000, 999999)
+        if val not in existing_ids and val not in _generated_ids:
+            _generated_ids.add(val)
+            return val
 
 def resolve_or_create_ids(graph: OrgGraph, client: SciformaClient, *, simulation: bool = False) -> Tuple[int, int]:
-    '''For every node, top-down by level: lookup by description, else create.
-    Returns (found_count, created_count).'''
+    """For every node, top-down by level: lookup by description, else create/synthesize.
+    Returns (found_count, created_count).
+    """
     found = 0
     created = 0
 
-    # Ensure parent nodes are created before children
     for level in LEVELS:
-        # stable processing order: by encounter order of roots then children
         for (lvl, _), node in list(graph.nodes.items()):
             if lvl != level:
                 continue
 
-            # Update parent_id from current parent object if known
             node.parent_id = node.parent.id if (node.parent and node.parent.id is not None) else (TOP_PARENT_ID if node.parent is None else node.parent_id)
 
-            # 1) Try to resolve by description
             existing = client.get_org_by_description(node.description)
-            if existing and isinstance(existing, dict) and existing.get('id'):
-                node.id = int(existing['id'])
+            if existing and isinstance(existing, dict) and existing.get('id') is not None:
+                node.id = int(existing['id']) if not isinstance(existing['id'], int) else existing['id']
                 found += 1
                 continue
 
-            # 2) Create if missing and not simulation
             if not simulation:
                 created_obj = client.create_organization(parent_id=node.parent_id, name=node.name, description=node.description)
-                node.id = int(created_obj.get('id')) if created_obj.get('id') is not None else node.id
+                try:
+                    node.id = int(created_obj.get('id')) if created_obj.get('id') is not None else node.id
+                except Exception:
+                    node.id = created_obj.get('id')
                 created += 1
             else:
-                # in simulation, leave id as-is (None)
-                pass
+                # In simulation mode, synthesize a 6-digit id when GET returns nothing
+                existing_ids = {n.id for n in graph.nodes.values() if n.id is not None}
+                node.id = _generate_unique_id(existing_ids)
 
-    # After IDs exist for as many nodes as possible, compute sibling id links
     graph.compute_sibling_id_links()
-
     return found, created

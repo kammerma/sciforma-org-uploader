@@ -15,11 +15,10 @@ from .module2_orderer import enforce_ordering
 # Load .env if present
 load_dotenv()
 
-app = FastAPI(title="Sciforma Organization Uploader", version="1.0.0")
+app = FastAPI(title="Sciforma Organization Uploader", version="1.0.1")
 
 # Global in-memory graph (lives for process lifetime)
 ORG_GRAPH = None
-
 
 def make_client(debug: bool = False) -> SciformaClient:
     base_url = os.environ.get('SCIFORMA_BASE_URL')
@@ -28,6 +27,8 @@ def make_client(debug: bool = False) -> SciformaClient:
     client_secret = os.environ.get('SCIFORMA_CLIENT_SECRET')
     scope = os.environ.get('SCIFORMA_SCOPE', 'organizations:read organizations:write')
     timeout = int(os.environ.get('REQUEST_TIMEOUT_SECONDS', '30'))
+    rate_limit_rps = os.environ.get('SCIFORMA_RATE_LIMIT_RPS')
+    rate_limit_rps = float(rate_limit_rps) if rate_limit_rps else None
 
     missing = [k for k, v in {
         'SCIFORMA_BASE_URL': base_url,
@@ -38,7 +39,7 @@ def make_client(debug: bool = False) -> SciformaClient:
     if missing:
         raise RuntimeError(f"Missing environment variables: {', '.join(missing)}")
 
-    return SciformaClient(base_url, token_url, client_id, client_secret, scope, timeout=timeout, debug=debug)
+    return SciformaClient(base_url, token_url, client_id, client_secret, scope, timeout=timeout, debug=debug, rate_limit_rps=rate_limit_rps)
 
 
 class Module1Request(BaseModel):
