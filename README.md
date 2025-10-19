@@ -31,7 +31,7 @@ Each node conforms to:
 
 - `description` is the code for the node (division_code, facility_code, department_code, bu_code, or bsu_code).
 - `name` is the human-readable label (division, facility, department, bu, bsu).
-- `parent_id` is the `id` of the immediate parent (or `-1` for top-level).
+- `parent_id` is the `id` of the immediate parent (or `1` for top-level).
 - `previous_sibling_id` / `next_sibling_id` are derived from sequential order per parent based on CSV order. Use `-10` when no previous/next sibling.
 
 ## CSV Format

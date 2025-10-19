@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 from typing import Optional, List, Dict, Tuple
 
 # Special constants from specification
-TOP_PARENT_ID = -1
+TOP_PARENT_ID = 1
 NO_SIBLING_ID = -10
 
 LEVELS = ["division", "facility", "department", "bu", "bsu"]
