@@ -17,6 +17,7 @@ def enforce_ordering(graph: OrgGraph, client: SciformaClient, *, simulation: boo
                 node.id,
                 parent_id=node.parent_id,
                 name=node.name,
+                previous_sibling_id=node.previous_sibling_id,
                 next_sibling_id=node.next_sibling_id,
             )
         processed += 1

@@ -112,10 +112,10 @@ class SciformaClient:
         resp.raise_for_status()
         return resp.json()
 
-    def patch_organization(self, org_id: int, *, parent_id: int, name: str, next_sibling_id: int) -> Dict[str, Any]:
+    def patch_organization(self, org_id: int, *, parent_id: int, name: str, previous_sibling_id: int, next_sibling_id: int) -> Dict[str, Any]:
         url = f"{self.base_url}/organizations/{org_id}"
         headers = self._auth_headers() | {'Content-Type': 'application/merge-patch+json'}
-        payload = {'parent_id': parent_id, 'name': name, 'next_sibling_id': next_sibling_id}
+        payload = {'parent_id': parent_id, 'name': name, 'previous_sibling_id': previous_sibling_id, 'next_sibling_id': next_sibling_id}
         self._throttle()
         resp = self._client.patch(url, headers=headers, json=payload)
         self.log("PATCH", url, payload, "->", resp.status_code, resp.text[:300])
