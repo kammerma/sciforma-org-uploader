@@ -7,7 +7,7 @@ FastAPI-based backend service to ingest an enterprise organization structure fro
 The service provides two core modules:
 
 - **Module 1 (Loader)**: Parses a CSV containing the full path to each BSU (leaf) and builds an in-memory tree of organizational units. For each node, it checks Sciforma by _description_; if it exists, the `id` is filled. If missing and not in simulation mode, it creates the node in Sciforma and stores the returned `id`.
-- **Module 2 (Orderer)**: Ensures sibling ordering in Sciforma by setting `next_sibling_id` on each node (and parent_id/name) using PATCH.
+- **Module 2 (Orderer)**: Ensures sibling ordering in Sciforma by setting `next_sibling_id` on each node (and parent_id/name) using PATCH. It updates then name and description as well.
 
 Both modules support:
 
@@ -39,7 +39,7 @@ Each node conforms to:
 Expected headers (sample included in `data/sample_data/sample_org.csv`):
 
 ```
-division_code,division,facility_code,facility,department_code,department,bu_code,bu,bsu_code,bsu
+division_code;division;facility_code;facility;department_code;department;bu_code;bu;bsu_code;bsu
 ```
 
 Each row represents a leaf **BSU**; parents at each level are auto-inferred.
@@ -137,7 +137,7 @@ http://127.0.0.1:8080/docs
     {
       "csv_path": "data/sample_data/sample_org.csv",
       "simulation": true,
-      "debug": false,
+      "debug": true,
       "print_structure": true
     }
     ```
@@ -155,7 +155,7 @@ http://127.0.0.1:8080/docs
 
 - **POST** `/module2` (Module 2 only)
   ```json
-  { "simulation": false, "debug": true, "print_structure": false }
+  { "simulation": true, "debug": true, "print_structure": true }
   ```
   > Requires Module 1 to have been run in the current process to have an in-memory graph.
 
