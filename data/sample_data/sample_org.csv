@@ -1,7 +1,7 @@
-division_code,division,facility_code,facility,department_code,department,bu_code,bu,bsu_code,bsu
-DIV-01,Corporate,FC-100,Zurich,DEP-10,IT,BU-101,Apps,BSU-1001,Business Apps
-DIV-01,Corporate,FC-100,Zurich,DEP-10,IT,BU-101,Apps,BSU-1002,Integration
-DIV-01,Corporate,FC-100,Zurich,DEP-10,IT,BU-101,Apps,BSU-1003,IT Apps
-DIV-01,Corporate,FC-100,Zurich,DEP-11,Finance,BU-201,Accounting,BSU-2001,AR/AP
-DIV-02,Operations,FC-200,Bern,DEP-20,Manufacturing,BU-301,Assembly,BSU-3001,Line A
-DIV-02,Operations,FC-200,Bern,DEP-20,Manufacturing,BU-301,Assembly,BSU-3002,Line B
+division_code;division;facility_code;facility;department_code;department;bu_code;bu;bsu_code;bsu
+DIV-01;Corporate;FC-100;Zurich;DEP-10;IT;BU-101;Apps;BSU-1001;Business Apps
+DIV-01;Corporate;FC-100;Zurich;DEP-10;IT;BU-101;Apps;BSU-1002;Integration
+DIV-01;Corporate;FC-100;Zurich;DEP-10;IT;BU-101;Apps;BSU-1003;IT Apps
+DIV-01;Corporate;FC-100;Zurich;DEP-11;Finance;BU-201;Accounting;BSU-2001;AR/AP
+DIV-02;Operations;FC-200;Bern;DEP-20;Manufacturing;BU-301;Assembly;BSU-3001;Line A
+DIV-02;Operations;FC-200;Bern;DEP-20;Manufacturing;BU-301;Assembly;BSU-3002;Line B
