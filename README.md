@@ -123,6 +123,7 @@ uvicorn app.main:app --reload --port 8080
 ### 5) Wake up Sciforma
 
 https://mediclinic.sciforma.net/wakeup
+
 https://mediclinic-test.sciforma.net/wakeup
 
 ### 5) Endpoints

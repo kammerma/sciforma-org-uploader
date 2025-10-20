@@ -8,7 +8,9 @@ def enforce_ordering(graph: OrgGraph, client: SciformaClient, *, simulation: boo
     '''PATCH each node so that Sciforma reflects correct ordering and parent.
     Returns number of processed nodes.'''
     processed = 0
-    for node in graph.all_nodes_in_level_order():
+    # Ensure we traverse the nodes in reverse order so the last node is processed first.
+    nodes = list(graph.all_nodes_in_level_order())
+    for node in reversed(nodes):
         if node.id is None:
             # Cannot patch without an ID
             continue
@@ -17,7 +19,6 @@ def enforce_ordering(graph: OrgGraph, client: SciformaClient, *, simulation: boo
                 node.id,
                 parent_id=node.parent_id,
                 name=node.name,
-                previous_sibling_id=node.previous_sibling_id,
                 next_sibling_id=node.next_sibling_id,
             )
         processed += 1
