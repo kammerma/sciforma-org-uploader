@@ -186,7 +186,7 @@ class SciformaClient:
     def patch_organization(self, org_id: int, *, parent_id: int, name: str, next_sibling_id: int) -> Dict[str, Any]:
         url = f"{self.base_url}/organizations/{org_id}"
         headers = self._auth_headers() | {'Content-Type': 'application/merge-patch+json'}
-        payload = {'parent_id': parent_id, 'name': name, 'next_sibling_id': next_sibling_id, 'description': ""}
+        payload = {'parent_id': parent_id, 'name': name, 'next_sibling_id': next_sibling_id}
         resp = self._request('PATCH', url, headers=headers, json=payload)
         try:
             body_preview = resp.text[:300]

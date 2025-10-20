@@ -2,6 +2,7 @@
 from __future__ import annotations
 from .models import OrgGraph
 from .sciforma_client import SciformaClient
+import time
 
 
 def enforce_ordering(graph: OrgGraph, client: SciformaClient, *, simulation: bool = False) -> int:
@@ -21,5 +22,7 @@ def enforce_ordering(graph: OrgGraph, client: SciformaClient, *, simulation: boo
                 name=node.name,
                 next_sibling_id=node.next_sibling_id,
             )
+            # Pause briefly between PATCH requests to avoid rate limits or overloading the server
+            time.sleep(3)
         processed += 1
     return processed
