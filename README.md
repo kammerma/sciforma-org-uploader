@@ -6,8 +6,8 @@ FastAPI-based backend service to ingest an enterprise organization structure fro
 
 The service provides two core modules:
 
-- **Module 1 (Loader)**: Parses a CSV containing the full path to each BSU (leaf) and builds an in-memory tree of organizational units. For each node, it checks Sciforma by _description_; if it exists, the `id` is filled. If missing and not in simulation mode, it creates the node in Sciforma and stores the returned `id`.
-- **Module 2 (Orderer)**: Ensures sibling ordering in Sciforma by setting `next_sibling_id` on each node (and parent_id/name) using PATCH. It updates then name and description as well.
+- **Module 1 (Loader)**: Parses a CSV containing the full path to each BSU (leaf) and builds an in-memory tree of organizational units. For each node, it checks Sciforma by _organization code_; if it exists, the `id` is filled. If missing and not in simulation mode, it creates the node in Sciforma and stores the returned `id`.
+- **Module 2 (Orderer)**: Ensures sibling ordering in Sciforma by setting `next_sibling_id` on each node (and parent_id/name) using PATCH. It updates the name as well.
 
 Both modules support:
 
@@ -23,13 +23,13 @@ Each node conforms to:
   "parent_id": integer (int64),
   "previous_sibling_id": integer (int64),
   "name": string,
-  "description": string,
+  "organization_code": string,
   "id": integer (int64),
   "next_sibling_id": integer (int64)
 }
 ```
 
-- `description` is the code for the node (division_code, facility_code, department_code, bu_code, or bsu_code).
+- `organization_code` is the code for the node (division_code, facility_code, department_code, bu_code, or bsu_code).
 - `name` is the human-readable label (division, facility, department, bu, bsu).
 - `parent_id` is the `id` of the immediate parent (or `1` for top-level).
 - `previous_sibling_id` / `next_sibling_id` are derived from sequential order per parent based on CSV order. Use `-10` when no previous/next sibling.
@@ -46,10 +46,10 @@ Each row represents a leaf **BSU**; parents at each level are auto-inferred.
 
 ## Sciforma API
 
-- **Search by description**: `GET {baseUrl}/organizations?description=<desc>&fields=description`
+- **Search by code**: `GET {baseUrl}/organizations?organization code=<code>&fields=organization code`
 - **Create if missing**: `POST {baseUrl}/organizations`
   ```json
-  { "parent_id": node_parent_id, "name": node_name, "description": node_description, "next_sibling_id": -10 }
+  { "parent_id": node_parent_id, "name": node_name, "organization code": node_organization_code, "next_sibling_id": -10 }
   ```
 - **Update ordering**: `PATCH {baseUrl}/organizations/:organization_id`
   ```json

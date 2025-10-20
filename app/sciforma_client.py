@@ -1,6 +1,7 @@
 
 from __future__ import annotations
 import time
+import random
 from typing import Any, Dict, Optional
 import httpx
 
@@ -13,16 +14,16 @@ class SciformaClient:
         self.client_id = client_id
         self.client_secret = client_secret
         self.scope = scope
-    self.timeout = timeout
+        self.timeout = timeout
         self.debug = debug
-    # Retry/backoff settings
-    self.max_retries = max_retries
-    self.backoff_factor = backoff_factor
-    self.max_backoff = max_backoff
+        # Retry/backoff settings
+        self.max_retries = max_retries
+        self.backoff_factor = backoff_factor
+        self.max_backoff = max_backoff
         self._token: Optional[str] = None
         self._token_expiry: Optional[float] = None
-    # Use httpx.Timeout to allow more fine-grained control later if needed
-    self._client = httpx.Client(timeout=httpx.Timeout(timeout))
+        # Use httpx.Timeout to allow more fine-grained control later if needed
+        self._client = httpx.Client(timeout=httpx.Timeout(timeout))
 
         # Rate limit: min interval between requests
         self._rate_limit_rps = rate_limit_rps
@@ -107,7 +108,7 @@ class SciformaClient:
                     backoff = min(self.max_backoff, self.backoff_factor * (2 ** attempt))
                     # add full jitter
                     jitter = backoff * 0.1
-                    sleep_for = backoff + (jitter * (httpx.random.random() - 0.5) * 2)
+                    sleep_for = backoff + (jitter * (random.random() - 0.5) * 2)
                     self.log(f"Transient status {resp.status_code}, retrying in {sleep_for:.2f}s (attempt {attempt + 1})")
                     time.sleep(sleep_for)
                     attempt += 1
@@ -122,7 +123,7 @@ class SciformaClient:
                 if attempt < self.max_retries:
                     backoff = min(self.max_backoff, self.backoff_factor * (2 ** attempt))
                     jitter = backoff * 0.1
-                    sleep_for = backoff + (jitter * (httpx.random.random() - 0.5) * 2)
+                    sleep_for = backoff + (jitter * (random.random() - 0.5) * 2)
                     self.log(f"Request error: {exc!r}, retrying in {sleep_for:.2f}s (attempt {attempt + 1})")
                     time.sleep(sleep_for)
                     attempt += 1
@@ -136,12 +137,12 @@ class SciformaClient:
         self._ensure_token()
         return {'Authorization': f'Bearer {self._token}'}
 
-    def get_org_by_description(self, description: str) -> Optional[Dict[str, Any]]:
+    def get_org_by_code(self, organization_code: str) -> Optional[Dict[str, Any]]:
         """
-        GET {baseUrl}/organizations?description=<desc>
+        GET {baseUrl}/organizations?organization code=<code>
         Accepts full object responses. Normalizes id to int if possible.
         """
-        params = {'description': description}
+        params = {'organization code': organization_code}
         url = f"{self.base_url}/organizations"
         headers = self._auth_headers()
         resp = self._request('GET', url, params=params, headers=headers)
@@ -169,10 +170,10 @@ class SciformaClient:
             return data
         return None
 
-    def create_organization(self, *, parent_id: int, name: str, description: str) -> Dict[str, Any]:
+    def create_organization(self, *, parent_id: int, name: str, organization_code: str) -> Dict[str, Any]:
         url = f"{self.base_url}/organizations"
         headers = self._auth_headers() | {'Content-Type': 'application/json'}
-        payload = {'parent_id': parent_id, 'name': name, 'description': description, 'next_sibling_id': -10}
+        payload = {'parent_id': parent_id, 'name': name, 'organization code': organization_code, 'next_sibling_id': -10}
         resp = self._request('POST', url, headers=headers, json=payload)
         try:
             body_preview = resp.text[:300]
@@ -182,10 +183,10 @@ class SciformaClient:
         resp.raise_for_status()
         return resp.json()
 
-    def patch_organization(self, org_id: int, *, parent_id: int, name: str, next_sibling_id: int, code: str) -> Dict[str, Any]:
+    def patch_organization(self, org_id: int, *, parent_id: int, name: str, next_sibling_id: int) -> Dict[str, Any]:
         url = f"{self.base_url}/organizations/{org_id}"
         headers = self._auth_headers() | {'Content-Type': 'application/merge-patch+json'}
-        payload = {'parent_id': parent_id, 'name': name, 'next_sibling_id': next_sibling_id, 'organization code': code, 'description': ""}
+        payload = {'parent_id': parent_id, 'name': name, 'next_sibling_id': next_sibling_id, 'description': ""}
         resp = self._request('PATCH', url, headers=headers, json=payload)
         try:
             body_preview = resp.text[:300]

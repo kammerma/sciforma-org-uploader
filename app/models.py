@@ -28,7 +28,7 @@ class Node:
     level: str
     code: str
     name: str
-    description: str
+    organization_code: str
     parent: Optional["Node"] = None
     children: List["Node"] = field(default_factory=list)
 
@@ -49,7 +49,7 @@ class Node:
             "parent_id": self.parent_id,
             "previous_sibling_id": self.previous_sibling_id,
             "name": self.name,
-            "description": self.description,
+            "organization_code": self.organization_code,
             "id": self.id,
             "next_sibling_id": self.next_sibling_id,
             "level": self.level,
@@ -82,7 +82,7 @@ class OrgGraph:
             if parent and node.parent is None:
                 parent.attach_child(node)
             return node
-        node = Node(level=level, code=code, name=name, description=code)
+        node = Node(level=level, code=code, name=name, organization_code=code)
         self.nodes[key] = node
         if parent:
             parent.attach_child(node)

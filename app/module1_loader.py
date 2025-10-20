@@ -16,7 +16,7 @@ def _generate_unique_id(existing_ids: set[int]) -> int:
             return val
 
 def resolve_or_create_ids(graph: OrgGraph, client: SciformaClient, *, simulation: bool = False) -> Tuple[int, int]:
-    """For every node, top-down by level: lookup by description, else create/synthesize.
+    """For every node, top-down by level: lookup by code, else create/synthesize.
     Returns (found_count, created_count).
     """
     found = 0
@@ -29,14 +29,14 @@ def resolve_or_create_ids(graph: OrgGraph, client: SciformaClient, *, simulation
 
             node.parent_id = node.parent.id if (node.parent and node.parent.id is not None) else (TOP_PARENT_ID if node.parent is None else node.parent_id)
 
-            existing = client.get_org_by_description(node.description)
+            existing = client.get_org_by_code(node.organization_code)
             if existing and isinstance(existing, dict) and existing.get('id') is not None:
                 node.id = int(existing['id']) if not isinstance(existing['id'], int) else existing['id']
                 found += 1
                 continue
 
             if not simulation:
-                created_obj = client.create_organization(parent_id=node.parent_id, name=node.name, description=node.description)
+                created_obj = client.create_organization(parent_id=node.parent_id, name=node.name, organization_code=node.organization_code)
                 try:
                     node.id = int(created_obj.get('id')) if created_obj.get('id') is not None else node.id
                 except Exception:
