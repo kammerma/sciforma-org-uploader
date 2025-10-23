@@ -7,7 +7,7 @@ FastAPI-based backend service to ingest an enterprise organization structure fro
 The service provides two core modules:
 
 - **Module 1 (Loader)**: Parses a CSV containing the full path to each BSU (leaf) and builds an in-memory tree of organizational units. For each node, it checks Sciforma by _organization code_; if it exists, the `id` is filled. If missing and not in simulation mode, it creates the node in Sciforma and stores the returned `id`.
-- **Module 2 (Orderer)**: Ensures sibling ordering in Sciforma by setting `next_sibling_id` on each node (and parent_id/name) using PATCH. It updates the name as well.
+- **Module 2 (Orderer)**: Ensures sibling ordering in Sciforma by setting `next_sibling_id` on each node (and parent_id and name) using PATCH. For simplicity reasons, this step could be combined with and completed in Module 1.
 
 Both modules support:
 
